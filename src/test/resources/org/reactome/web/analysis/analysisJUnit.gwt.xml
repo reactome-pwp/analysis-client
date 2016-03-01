@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to="analysis">
+    <!-- Inherit our applications main module.                      -->
+    <inherits name='org.reactome.web.analysis.Analysis'/>
+
+    <!-- Specify the path to any remote services.                   -->
+    <!--<servlet path="/analysis/greet" class="org.reactome.web.analysis.server.GreetingServiceImpl" />-->
+
+</module>

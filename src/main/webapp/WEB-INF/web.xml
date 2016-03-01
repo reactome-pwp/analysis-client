@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+        PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+    <!-- RESTFul WS PROXY Configuration (ONLY USED IN DEV MODE) -->
+    <servlet>
+        <servlet-name>ReactomeAnalysis</servlet-name>
+        <servlet-class>uk.ac.ebi.pride.web.util.servlet.proxy.ProxyServlet</servlet-class>
+        <init-param>
+            <param-name>proxyHost</param-name>
+            <!--<param-value>localhost</param-value>-->
+            <param-value>reactomedev.oicr.on.ca</param-value>
+            <!--<param-value>www.reactome.org</param-value>-->
+        </init-param>
+        <init-param>
+            <param-name>proxyPort</param-name>
+            <param-value>80</param-value>
+            <!--<param-value>7080</param-value>-->
+        </init-param>
+        <init-param>
+            <param-name>proxyPath</param-name>
+            <!--<param-value>/</param-value>-->
+            <param-value>/AnalysisService</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReactomeAnalysis</servlet-name>
+        <url-pattern>/AnalysisService/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Default page to serve -->
+    <welcome-file-list>
+        <welcome-file>analysis.html</welcome-file>
+    </welcome-file-list>
+
+</web-app>

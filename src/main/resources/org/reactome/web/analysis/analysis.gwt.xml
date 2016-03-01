@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='analysis'>
+  <!-- Inherit the core Web Toolkit stuff.                        -->
+  <inherits name='com.google.gwt.user.User' />
+
+  <!-- Other module inherits                                      -->
+  <inherits name="com.google.web.bindery.autobean.AutoBean"/>
+  <inherits name="com.google.gwt.json.JSON"/>
+  <inherits name="org.reactome.web.pwp.model.PathwayPortalModel"/>
+
+
+  <!-- Specify the paths for translatable code                    -->
+  <source path='client' />
+
+</module>
