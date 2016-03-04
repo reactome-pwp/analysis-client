@@ -19,7 +19,8 @@ import java.util.List;
  * See https://gwt-maven-plugin.github.io/gwt-maven-plugin/user-guide/testing.html
  * for details.
  */
-public class GwtTestAnalysis extends GWTTestCase {
+@SuppressWarnings("Duplicates")
+public class GwtTestAnalysisNoProjection extends GWTTestCase {
 
     private static String token;
     /**
@@ -31,16 +32,16 @@ public class GwtTestAnalysis extends GWTTestCase {
     }
 
     /**
-     * Tests the data analysis.
+     * Tests the data analysis not projecting to human.
      */
-    public void testAnalysisData() {
+    public void testAnalysisDataNoProjection() {
         // Since RPC calls are asynchronous, we will need to wait for a response
         // after this test method returns. This line tells the test runner to wait
         // up to 10 seconds before timing out.
         delayTestFinish(10000);
 
         AnalysisClient.SERVER = "http://reactomedev.oicr.on.ca";
-        AnalysisClient.analyseData("#Test\nPTEN\nUNC5B", true, 1, 1, new AnalysisHandler.Result() {
+        AnalysisClient.analyseData("#Test\nPTEN\nUNC5B", false, 1, 1, new AnalysisHandler.Result() {
             @Override
             public void onAnalysisServerException(String message) {
                 fail(message);
@@ -64,7 +65,7 @@ public class GwtTestAnalysis extends GWTTestCase {
      * This test will send a request to the server using the greetServer method in
      * GreetingService and verify the response.
      */
-    public void testPathwaysSummaries() {
+    public void testPathwaysSummariesNoProjection() {
         // Since RPC calls are asynchronous, we will need to wait for a response
         // after this test method returns. This line tells the test runner to wait
         // up to 10 seconds before timing out.
