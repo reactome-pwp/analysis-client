@@ -25,7 +25,7 @@ public abstract class AnalysisClient {
     private static final Set<String> validTokens = new HashSet<>();
 
     public static Request analyseData(String data, boolean projection, int pageSize, int page, final AnalysisHandler.Result handler) {
-        String url = SERVER + ANALYSIS + "/identifiers" + (projection ? "/projection" : "") + "?pageSize=" + pageSize + "&page=" + page;
+        String url = SERVER + ANALYSIS + "/identifiers/" + (projection ? "projection" : "") + "?pageSize=" + pageSize + "&page=" + page;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
         requestBuilder.setHeader("Content-Type", "text/plain");
         return analyse(requestBuilder, data, handler);
