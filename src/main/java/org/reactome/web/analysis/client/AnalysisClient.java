@@ -24,8 +24,8 @@ public abstract class AnalysisClient {
 
     private static final Set<String> validTokens = new HashSet<>();
 
-    public static Request analyseData(String data, boolean projection, int pageSize, int page, final AnalysisHandler.Result handler) {
-        String url = SERVER + ANALYSIS + "/identifiers/" + (projection ? "projection" : "") + "?pageSize=" + pageSize + "&page=" + page;
+    public static Request analyseData(String data, boolean projection, boolean interactors, int pageSize, int page, final AnalysisHandler.Result handler) {
+        String url = SERVER + ANALYSIS + "/identifiers/" + (projection ? "projection" : "") + "?interactors=" + interactors + "&pageSize=" + pageSize + "&page=" + page;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
         requestBuilder.setHeader("Content-Type", "text/plain");
         return analyse(requestBuilder, data, handler);
@@ -206,17 +206,17 @@ public abstract class AnalysisClient {
         return null;
     }
 
-    public static Request getPathwayIdentifiers(String token, String resource, Long pathwayDbId, final AnalysisHandler.Identifiers handler) {
-        String url = SERVER + ANALYSIS + "/token/" + token + "/summary/" + pathwayDbId + "?resource=" + resource;
-        return getPathwayIdentifiers(url, handler);
+    public static Request getPathwayFoundEntities(String token, String resource, Long pathwayDbId, final AnalysisHandler.Entities handler) {
+        String url = SERVER + ANALYSIS + "/token/" + token + "/found/entities/" + pathwayDbId + "?resource=" + resource;
+        return getPathwayEntities(url, handler);
     }
 
-    public static Request getPathwayIdentifiers(String token, String resource, Long pathwayDbId, int pageSize, int page, final AnalysisHandler.Identifiers handler) {
-        String url = SERVER + ANALYSIS + "/token/" + token + "/summary/" + pathwayDbId + "?resource=" + resource + "&pageSize=" + pageSize + "&page=" + page;
-        return getPathwayIdentifiers(url, handler);
+    public static Request getPathwayFoundEntities(String token, String resource, Long pathwayDbId, int pageSize, int page, final AnalysisHandler.Entities handler) {
+        String url = SERVER + ANALYSIS + "/token/" + token + "/found/entities/" + pathwayDbId + "?resource=" + resource + "&pageSize=" + pageSize + "&page=" + page;
+        return getPathwayEntities(url, handler);
     }
 
-    private static Request getPathwayIdentifiers(String url, final AnalysisHandler.Identifiers handler) {
+    private static Request getPathwayEntities(String url, final AnalysisHandler.Entities handler) {
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             final long start = System.currentTimeMillis();
@@ -227,21 +227,118 @@ public abstract class AnalysisClient {
                     switch (response.getStatusCode()) {
                         case Response.SC_OK:
                             try {
-                                PathwayIdentifiers pathwayIdentifiers = AnalysisModelFactory.getModelObject(PathwayIdentifiers.class, response.getText());
+                                PathwayEntities pathwayIdentifiers = AnalysisModelFactory.getModelObject(PathwayEntities.class, response.getText());
                                 time = System.currentTimeMillis() - start;
-                                handler.onPathwayIdentifiersLoaded(pathwayIdentifiers, time);
+                                handler.onPathwayEntitiesLoaded(pathwayIdentifiers, time);
                             } catch (AnalysisModelException e) {
                                 handler.onAnalysisServerException(e.getMessage());
                             }
                             break;
                         case Response.SC_NOT_FOUND:
                             time = System.currentTimeMillis() - start;
-                            handler.onPathwayIdentifiersNotFound(time);
+                            handler.onPathwayEntitiesNotFound(time);
                             break;
                         default:
                             try {
                                 AnalysisError analysisError = AnalysisModelFactory.getModelObject(AnalysisError.class, response.getText());
-                                handler.onPathwayIdentifiersError(analysisError);
+                                handler.onPathwayEntitiesError(analysisError);
+                            } catch (AnalysisModelException e) {
+                                handler.onAnalysisServerException(e.getMessage());
+                            }
+                    }
+                }
+
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    handler.onAnalysisServerException(exception.getMessage());
+                }
+            });
+        } catch (RequestException e) {
+            handler.onAnalysisServerException(e.getMessage());
+        }
+        return null;
+    }
+
+    public static Request getPathwayFoundInteractors(String token, String resource, Long pathwayDbId, final AnalysisHandler.Interactors handler) {
+        String url = SERVER + ANALYSIS + "/token/" + token + "/found/interactors/" + pathwayDbId + "?resource=" + resource;
+        return getPathwayInteractors(url, handler);
+    }
+
+    public static Request getPathwayFoundInteractors(String token, String resource, Long pathwayDbId, int pageSize, int page, final AnalysisHandler.Interactors handler) {
+        String url = SERVER + ANALYSIS + "/token/" + token + "/found/interactors/" + pathwayDbId + "?resource=" + resource + "&pageSize=" + pageSize + "&page=" + page;
+        return getPathwayInteractors(url, handler);
+    }
+
+    private static Request getPathwayInteractors(String url, final AnalysisHandler.Interactors handler) {
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
+        try {
+            final long start = System.currentTimeMillis();
+            return requestBuilder.sendRequest(null, new RequestCallback() {
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                    long time;
+                    switch (response.getStatusCode()) {
+                        case Response.SC_OK:
+                            try {
+                                PathwayInteractors pathwayInteractors = AnalysisModelFactory.getModelObject(PathwayInteractors.class, response.getText());
+                                time = System.currentTimeMillis() - start;
+                                handler.onPathwayInteractorsLoaded(pathwayInteractors, time);
+                            } catch (AnalysisModelException e) {
+                                handler.onAnalysisServerException(e.getMessage());
+                            }
+                            break;
+                        case Response.SC_NOT_FOUND:
+                            time = System.currentTimeMillis() - start;
+                            handler.onPathwayInteractorsNotFound(time);
+                            break;
+                        default:
+                            try {
+                                AnalysisError analysisError = AnalysisModelFactory.getModelObject(AnalysisError.class, response.getText());
+                                handler.onPathwayInteractorsError(analysisError);
+                            } catch (AnalysisModelException e) {
+                                handler.onAnalysisServerException(e.getMessage());
+                            }
+                    }
+                }
+
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    handler.onAnalysisServerException(exception.getMessage());
+                }
+            });
+        } catch (RequestException e) {
+            handler.onAnalysisServerException(e.getMessage());
+        }
+        return null;
+    }
+
+    public static Request getPathwayFoundElements(String token, String resource, Long pathwayDbId, final AnalysisHandler.Elements handler) {
+        String url = SERVER + ANALYSIS + "/token/" + token + "/found/all/" + pathwayDbId + "?resource=" + resource;
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
+        try {
+            final long start = System.currentTimeMillis();
+            return requestBuilder.sendRequest(null, new RequestCallback() {
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                    long time;
+                    switch (response.getStatusCode()) {
+                        case Response.SC_OK:
+                            try {
+                                PathwayElements pathwayInteractors = AnalysisModelFactory.getModelObject(PathwayElements.class, response.getText());
+                                time = System.currentTimeMillis() - start;
+                                handler.onPathwayElementsLoaded(pathwayInteractors, time);
+                            } catch (AnalysisModelException e) {
+                                handler.onAnalysisServerException(e.getMessage());
+                            }
+                            break;
+                        case Response.SC_NOT_FOUND:
+                            time = System.currentTimeMillis() - start;
+                            handler.onPathwayElementsNotFound(time);
+                            break;
+                        default:
+                            try {
+                                AnalysisError analysisError = AnalysisModelFactory.getModelObject(AnalysisError.class, response.getText());
+                                handler.onPathwayElementsError(analysisError);
                             } catch (AnalysisModelException e) {
                                 handler.onAnalysisServerException(e.getMessage());
                             }

@@ -7,6 +7,10 @@ public interface AnalysisSummary {
 
     String getToken();
 
+    Boolean getProjection();
+
+    Boolean getInteractors();
+
     String getType();
 
     Long getSpecies();

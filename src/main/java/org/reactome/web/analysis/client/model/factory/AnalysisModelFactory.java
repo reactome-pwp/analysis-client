@@ -26,12 +26,16 @@ public abstract class AnalysisModelFactory {
         AutoBean<AnalysisSummary> analysisSummary();
         AutoBean<ResourceSummary> resourceSummary();
         AutoBean<PathwayBase> pathwayBase();
+        AutoBean<InteractorEvidence> interactorEvidence();
         AutoBean<PathwaySummary> pathwaySummary();
         AutoBean<SpeciesSummary> getSpeciesSummary();
         AutoBean<EntityStatistics> entityStatistics();
         AutoBean<ReactionStatistics> reactionStatistics();
-        AutoBean<PathwayIdentifiers> pathwayIdentifiers();
-        AutoBean<PathwayIdentifier> pathwayIdentifier();
+        AutoBean<PathwayEntities> pathwayEntities();
+        AutoBean<PathwayEntity> pathwayEntity();
+        AutoBean<PathwayInteractor> pathwayInteractor();
+        AutoBean<PathwayInteractors> pathwayInteractors();
+        AutoBean<PathwayElements> pathwayElements();
         AutoBean<IdentifierMap> identifierMap();
         AutoBean<IdentifierSummary> identifierSummary();
         AutoBean<ExpressionSummary> expressionBoundaries();

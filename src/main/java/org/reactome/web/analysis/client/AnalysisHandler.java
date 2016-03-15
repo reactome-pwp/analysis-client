@@ -14,13 +14,33 @@ public interface AnalysisHandler {
     void onAnalysisServerException(String message);
 
 
-    interface Identifiers extends AnalysisHandler {
+    interface Entities extends AnalysisHandler {
 
-        void onPathwayIdentifiersLoaded(PathwayIdentifiers identifiers, long time);
+        void onPathwayEntitiesLoaded(PathwayEntities entities, long time);
 
-        void onPathwayIdentifiersNotFound(long time);
+        void onPathwayEntitiesNotFound(long time);
 
-        void onPathwayIdentifiersError(AnalysisError error);
+        void onPathwayEntitiesError(AnalysisError error);
+
+    }
+
+    interface Interactors extends AnalysisHandler {
+
+        void onPathwayInteractorsLoaded(PathwayInteractors interactors, long time);
+
+        void onPathwayInteractorsNotFound(long time);
+
+        void onPathwayInteractorsError(AnalysisError error);
+    }
+
+
+    interface Elements extends AnalysisHandler {
+
+        void onPathwayElementsLoaded(PathwayElements elements, long time);
+
+        void onPathwayElementsNotFound(long time);
+
+        void onPathwayElementsError(AnalysisError error);
 
     }
 

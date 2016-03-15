@@ -41,7 +41,7 @@ public class GwtTestAnalysisProjection extends GWTTestCase {
         delayTestFinish(10000);
 
         AnalysisClient.SERVER = "http://reactomedev.oicr.on.ca";
-        AnalysisClient.analyseData("#Test\nPTEN\nUNC5B", true, 1, 1, new AnalysisHandler.Result() {
+        AnalysisClient.analyseData("#Test\nPTEN\nUNC5B", true, false, 1, 1, new AnalysisHandler.Result() {
             @Override
             public void onAnalysisServerException(String message) {
                 fail(message);

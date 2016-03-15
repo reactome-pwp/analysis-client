@@ -5,11 +5,11 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public interface PathwayIdentifiers {
+public interface PathwayEntities {
 
     List<String> getExpNames();
 
-    List<PathwayIdentifier> getIdentifiers();
+    List<PathwayEntity> getIdentifiers();
 
     List<String> getResources();
 
