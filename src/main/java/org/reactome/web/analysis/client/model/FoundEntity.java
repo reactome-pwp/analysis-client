@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public interface PathwayEntity extends IdentifierSummary {
+public interface FoundEntity extends IdentifierSummary {
 
     Set<IdentifierMap> getMapsTo();
 }

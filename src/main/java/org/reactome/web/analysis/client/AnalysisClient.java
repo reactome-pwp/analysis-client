@@ -46,13 +46,15 @@ public abstract class AnalysisClient {
                 public void onResponseReceived(Request request, Response response) {
                     switch (response.getStatusCode()) {
                         case Response.SC_OK:
+                            AnalysisResult result;
                             try {
-                                AnalysisResult result = AnalysisModelFactory.getModelObject(AnalysisResult.class, response.getText());
-                                long time = System.currentTimeMillis() - start;
-                                handler.onAnalysisResult(result, time);
+                                result = AnalysisModelFactory.getModelObject(AnalysisResult.class, response.getText());
                             } catch (AnalysisModelException e) {
                                 handler.onAnalysisServerException(e.getMessage());
+                                return;
                             }
+                            long time = System.currentTimeMillis() - start;
+                            handler.onAnalysisResult(result, time);
                             break;
                         default:
                             try {
@@ -227,7 +229,7 @@ public abstract class AnalysisClient {
                     switch (response.getStatusCode()) {
                         case Response.SC_OK:
                             try {
-                                PathwayEntities pathwayIdentifiers = AnalysisModelFactory.getModelObject(PathwayEntities.class, response.getText());
+                                FoundEntities pathwayIdentifiers = AnalysisModelFactory.getModelObject(FoundEntities.class, response.getText());
                                 time = System.currentTimeMillis() - start;
                                 handler.onPathwayEntitiesLoaded(pathwayIdentifiers, time);
                             } catch (AnalysisModelException e) {
@@ -280,9 +282,9 @@ public abstract class AnalysisClient {
                     switch (response.getStatusCode()) {
                         case Response.SC_OK:
                             try {
-                                PathwayInteractors pathwayInteractors = AnalysisModelFactory.getModelObject(PathwayInteractors.class, response.getText());
+                                FoundInteractors interactors = AnalysisModelFactory.getModelObject(FoundInteractors.class, response.getText());
                                 time = System.currentTimeMillis() - start;
-                                handler.onPathwayInteractorsLoaded(pathwayInteractors, time);
+                                handler.onPathwayInteractorsLoaded(interactors, time);
                             } catch (AnalysisModelException e) {
                                 handler.onAnalysisServerException(e.getMessage());
                             }
@@ -323,13 +325,15 @@ public abstract class AnalysisClient {
                     long time;
                     switch (response.getStatusCode()) {
                         case Response.SC_OK:
+                            FoundElements pathwayInteractors;
                             try {
-                                PathwayElements pathwayInteractors = AnalysisModelFactory.getModelObject(PathwayElements.class, response.getText());
+                                pathwayInteractors = AnalysisModelFactory.getModelObject(FoundElements.class, response.getText());
                                 time = System.currentTimeMillis() - start;
-                                handler.onPathwayElementsLoaded(pathwayInteractors, time);
                             } catch (AnalysisModelException e) {
                                 handler.onAnalysisServerException(e.getMessage());
+                                return;
                             }
+                            handler.onPathwayElementsLoaded(pathwayInteractors, time);
                             break;
                         case Response.SC_NOT_FOUND:
                             time = System.currentTimeMillis() - start;
@@ -366,17 +370,18 @@ public abstract class AnalysisClient {
                 public void onResponseReceived(Request request, Response response) {
                     switch (response.getStatusCode()) {
                         case Response.SC_OK:
+                            List<IdentifierSummary> notFound = new LinkedList<>();;
                             try {
-                                List<IdentifierSummary> notFound = new LinkedList<IdentifierSummary>();
                                 JSONArray aux = JSONParser.parseStrict(response.getText()).isArray();
                                 for (int i = 0; i < aux.size(); i++) {
                                     JSONObject obj = aux.get(i).isObject();
                                     notFound.add(AnalysisModelFactory.getModelObject(IdentifierSummary.class, obj.toString()));
                                 }
-                                handler.onNotFoundIdentifiersLoaded(notFound);
                             } catch (AnalysisModelException e) {
                                 handler.onAnalysisServerException(e.getMessage());
+                                return;
                             }
+                            handler.onNotFoundIdentifiersLoaded(notFound);
                             break;
                         default:
                             try {
@@ -401,13 +406,14 @@ public abstract class AnalysisClient {
 
 
     public static Request getPathwaySummaries(String token, String resource, List<String> pathways, final AnalysisHandler.Summaries handler) {
-        String url = SERVER + ANALYSIS + "/token/" + token + "/filter/pathways?resource=" + resource;
+        if (pathways == null || pathways.isEmpty()) return null;
         StringBuilder postData = new StringBuilder();
         for (String pathway : pathways) {
             postData.append(pathway).append(",");
         }
         if (postData.length() > 0) postData.deleteCharAt(postData.length() - 1);
 
+        String url = SERVER + ANALYSIS + "/token/" + token + "/filter/pathways?resource=" + resource;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
         try {
             final long start = System.currentTimeMillis();
@@ -417,13 +423,15 @@ public abstract class AnalysisClient {
                     long time;
                     switch (response.getStatusCode()) {
                         case Response.SC_OK:
+                            List<PathwaySummary> pathwaySummaries;
                             try {
-                                List<PathwaySummary> pathwaySummaries = AnalysisModelFactory.getPathwaySummaryList(response.getText());
+                                pathwaySummaries = AnalysisModelFactory.getPathwaySummaryList(response.getText());
                                 time = System.currentTimeMillis() - start;
-                                handler.onPathwaySummariesLoaded(pathwaySummaries, time);
                             } catch (AnalysisModelException e) {
                                 handler.onAnalysisServerException(e.getMessage());
+                                return;
                             }
+                            handler.onPathwaySummariesLoaded(pathwaySummaries, time);
                             break;
                         case Response.SC_NOT_FOUND:
                             time = System.currentTimeMillis() - start;
@@ -491,16 +499,17 @@ public abstract class AnalysisClient {
     }
 
     public static Request getHitReactions(String token, String resource, Set<Pathway> pathways, final AnalysisHandler.Reactions handler) {
-        StringBuilder post = new StringBuilder();
+        if (pathways == null || pathways.isEmpty()) return null;
+        StringBuilder postData = new StringBuilder();
         for (Pathway pathway : pathways) {
-            post.append(pathway.getDbId()).append(",");
+            postData.append(pathway.getDbId()).append(",");
         }
-        post.delete(post.length() - 1, post.length());
+        if (postData.length() > 0) postData.delete(postData.length() - 1, postData.length());
 
         String url = SERVER + ANALYSIS + "/token/" + token + "/reactions/pathways?resource=" + resource;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
         try {
-            return requestBuilder.sendRequest(post.toString(), new RequestCallback() {
+            return requestBuilder.sendRequest(postData.toString(), new RequestCallback() {
                 @Override
                 public void onResponseReceived(Request request, Response response) {
                     switch (response.getStatusCode()) {

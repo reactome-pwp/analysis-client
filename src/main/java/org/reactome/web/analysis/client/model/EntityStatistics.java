@@ -7,6 +7,10 @@ import java.util.List;
  */
 public interface EntityStatistics extends Statistics {
 
+    Integer getCuratedTotal();
+
+    Integer getCuratedFound();
+
     Integer getInteractorsTotal();
 
     Integer getInteractorsFound();

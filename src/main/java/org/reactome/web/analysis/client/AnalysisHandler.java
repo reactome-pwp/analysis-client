@@ -16,7 +16,7 @@ public interface AnalysisHandler {
 
     interface Entities extends AnalysisHandler {
 
-        void onPathwayEntitiesLoaded(PathwayEntities entities, long time);
+        void onPathwayEntitiesLoaded(FoundEntities entities, long time);
 
         void onPathwayEntitiesNotFound(long time);
 
@@ -26,7 +26,7 @@ public interface AnalysisHandler {
 
     interface Interactors extends AnalysisHandler {
 
-        void onPathwayInteractorsLoaded(PathwayInteractors interactors, long time);
+        void onPathwayInteractorsLoaded(FoundInteractors interactors, long time);
 
         void onPathwayInteractorsNotFound(long time);
 
@@ -36,7 +36,7 @@ public interface AnalysisHandler {
 
     interface Elements extends AnalysisHandler {
 
-        void onPathwayElementsLoaded(PathwayElements elements, long time);
+        void onPathwayElementsLoaded(FoundElements elements, long time);
 
         void onPathwayElementsNotFound(long time);
 

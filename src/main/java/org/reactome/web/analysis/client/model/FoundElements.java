@@ -6,13 +6,18 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public interface PathwayInteractors {
+public interface FoundElements {
 
-    List<PathwayInteractor> getEntities();
+    List<FoundEntity> getEntities();
+
+    List<FoundInteractor> getInteractors();
 
     Set<String> getResources();
 
     List<String> getExpNames();
 
-    Integer getFound();
+    Integer getFoundEntities();
+
+    Integer getFoundInteractors();
+
 }

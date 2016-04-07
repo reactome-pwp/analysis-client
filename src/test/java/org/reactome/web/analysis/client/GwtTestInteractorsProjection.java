@@ -3,7 +3,7 @@ package org.reactome.web.analysis.client;
 import com.google.gwt.junit.client.GWTTestCase;
 import org.reactome.web.analysis.client.model.AnalysisError;
 import org.reactome.web.analysis.client.model.AnalysisResult;
-import org.reactome.web.analysis.client.model.PathwayInteractors;
+import org.reactome.web.analysis.client.model.FoundInteractors;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -58,11 +58,10 @@ public class GwtTestInteractorsProjection extends GWTTestCase {
         delayTestFinish(10000);
 
         AnalysisClient.SERVER = "http://reactomedev.oicr.on.ca";
-        token = "MjAxNjAzMTAwNTM0MzFfMg%253D%253D";
         AnalysisClient.getPathwayFoundInteractors(token, "TOTAL", 5205647L, new AnalysisHandler.Interactors() {
             @Override
-            public void onPathwayInteractorsLoaded(PathwayInteractors interactors, long time) {
-                System.out.println(interactors.getEntities().size());
+            public void onPathwayInteractorsLoaded(FoundInteractors interactors, long time) {
+                System.out.println(interactors.getFound());
                 finishTest();
             }
 
