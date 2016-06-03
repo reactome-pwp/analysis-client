@@ -13,11 +13,11 @@
 
   <properties>
     <!-- Convenience property to set the GWT version -->
-    <gwtVersion>2.7.0</gwtVersion>
+    <!--<gwtVersion>2.7.0</gwtVersion>-->
+    <gwtVersion>2.8.0-beta1</gwtVersion>
 
-    <!-- GWT needs at least java 1.7 -->
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -38,16 +38,19 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
+      <version>${gwtVersion}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
+      <version>${gwtVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
+      <version>${gwtVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -60,7 +63,7 @@
     <dependency>
       <groupId>org.reactome.web.pwp</groupId>
       <artifactId>model</artifactId>
-      <version>1.1.0</version>
+      <version>1.2.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
