@@ -8,7 +8,7 @@
     <!-- RESTFul WS PROXY Configuration (ONLY USED IN DEV MODE) -->
     <servlet>
         <servlet-name>ReactomeAnalysis</servlet-name>
-        <servlet-class>uk.ac.ebi.pride.web.util.servlet.proxy.ProxyServlet</servlet-class>
+        <servlet-class>org.reactome.server.utils.proxy.ProxyServlet</servlet-class>
         <init-param>
             <param-name>proxyHost</param-name>
             <!--<param-value>localhost</param-value>-->
