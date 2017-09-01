@@ -7,7 +7,7 @@ import com.google.gwt.json.client.JSONParser;
 import org.reactome.web.analysis.client.exceptions.AnalysisModelException;
 import org.reactome.web.analysis.client.model.*;
 import org.reactome.web.analysis.client.model.factory.AnalysisModelFactory;
-import org.reactome.web.pwp.model.classes.Pathway;
+import org.reactome.web.pwp.model.client.classes.Pathway;
 
 import java.util.HashSet;
 import java.util.LinkedList;
