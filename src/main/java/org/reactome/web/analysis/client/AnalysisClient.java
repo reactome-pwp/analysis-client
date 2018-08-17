@@ -31,6 +31,13 @@ public abstract class AnalysisClient {
         return analyse(requestBuilder, data, handler);
     }
 
+    public static Request analyseURL(String targetURL, boolean projection, boolean interactors, int pageSize, int page, final AnalysisHandler.Result handler) {
+        String url = SERVER + ANALYSIS + "/identifiers/url/" + (projection ? "projection" : "") + "?interactors=" + interactors + "&pageSize=" + pageSize + "&page=" + page;
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
+        requestBuilder.setHeader("Content-Type", "text/plain");
+        return analyse(requestBuilder, targetURL, handler);
+    }
+
     public static Request speciesComparison(Long dbId, int pageSize, int page, final AnalysisHandler.Result handler) {
         String url = SERVER + ANALYSIS + "/species/homoSapiens/" + dbId + "?pageSize=" + pageSize + "&page=" + page;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
