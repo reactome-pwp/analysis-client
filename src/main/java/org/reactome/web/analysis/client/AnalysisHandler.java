@@ -116,4 +116,20 @@ public interface AnalysisHandler {
 
     }
 
+    interface DatabaseName extends AnalysisHandler {
+
+        void onNameLoaded(String dbName);
+
+        void onNameError(AnalysisError error);
+
+    }
+
+    interface DatabaseVersion extends AnalysisHandler {
+
+        void onVersionLoaded(String dbVersion);
+
+        void onVersionError(AnalysisError error);
+
+    }
+
 }

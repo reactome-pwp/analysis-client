@@ -587,6 +587,82 @@ public abstract class AnalysisClient {
             handler.onAnalysisServerException(ex.getMessage());
         }
     }
+
+    public static Request getDatabaseName(final AnalysisHandler.DatabaseName handler) {
+        String url = SERVER + ANALYSIS + "/database/name";
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
+        try {
+            return requestBuilder.sendRequest(null, new RequestCallback() {
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                    switch (response.getStatusCode()) {
+                        case Response.SC_OK:
+                            try {
+                                handler.onNameLoaded(response.getText());
+                            } catch (Exception ex) {
+                                handler.onAnalysisServerException(ex.getMessage());
+                            }
+                            break;
+                        default:
+                            try {
+                                AnalysisError analysisError = AnalysisModelFactory.getModelObject(AnalysisError.class, response.getText());
+                                handler.onNameError(analysisError);
+                            } catch (AnalysisModelException e) {
+                                handler.onAnalysisServerException(e.getMessage());
+                            }
+                    }
+                }
+
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    handler.onAnalysisServerException(exception.getMessage());
+                }
+            });
+
+        } catch (RequestException ex) {
+            handler.onAnalysisServerException(ex.getMessage());
+        }
+        return null;
+    }
+
+    public static Request getDatabaseVersion(final AnalysisHandler.DatabaseVersion handler) {
+        String url = SERVER + ANALYSIS + "/database/version";
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
+        try {
+            return requestBuilder.sendRequest(null, new RequestCallback() {
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                    switch (response.getStatusCode()) {
+                        case Response.SC_OK:
+                            try {
+                                handler.onVersionLoaded(response.getText());
+                            } catch (Exception ex) {
+                                handler.onAnalysisServerException(ex.getMessage());
+                            }
+                            break;
+                        default:
+                            try {
+                                AnalysisError analysisError = AnalysisModelFactory.getModelObject(AnalysisError.class, response.getText());
+                                handler.onVersionError(analysisError);
+                            } catch (AnalysisModelException e) {
+                                handler.onAnalysisServerException(e.getMessage());
+                            }
+                    }
+                }
+
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    handler.onAnalysisServerException(exception.getMessage());
+                }
+            });
+
+        } catch (RequestException ex) {
+            handler.onAnalysisServerException(ex.getMessage());
+        }
+        return null;
+    }
+
+
 }
 
 
