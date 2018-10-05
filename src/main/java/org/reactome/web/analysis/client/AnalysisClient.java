@@ -588,8 +588,8 @@ public abstract class AnalysisClient {
         }
     }
 
-    public static Request getDatabaseName(final AnalysisHandler.DatabaseName handler) {
-        String url = SERVER + ANALYSIS + "/database/name";
+    public static Request getDatabaseInformation(final AnalysisHandler.DatabaseInformation handler) {
+        String url = SERVER + ANALYSIS + "/database/info";
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             return requestBuilder.sendRequest(null, new RequestCallback() {
@@ -598,7 +598,8 @@ public abstract class AnalysisClient {
                     switch (response.getStatusCode()) {
                         case Response.SC_OK:
                             try {
-                                handler.onNameLoaded(response.getText());
+                                DBInfo dbInfo = AnalysisModelFactory.getModelObject(DBInfo.class, response.getText());
+                                handler.onDBInfoLoaded(dbInfo);
                             } catch (Exception ex) {
                                 handler.onAnalysisServerException(ex.getMessage());
                             }
@@ -606,7 +607,7 @@ public abstract class AnalysisClient {
                         default:
                             try {
                                 AnalysisError analysisError = AnalysisModelFactory.getModelObject(AnalysisError.class, response.getText());
-                                handler.onNameError(analysisError);
+                                handler.onDBInfoError(analysisError);
                             } catch (AnalysisModelException e) {
                                 handler.onAnalysisServerException(e.getMessage());
                             }
@@ -624,44 +625,6 @@ public abstract class AnalysisClient {
         }
         return null;
     }
-
-    public static Request getDatabaseVersion(final AnalysisHandler.DatabaseVersion handler) {
-        String url = SERVER + ANALYSIS + "/database/version";
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
-        try {
-            return requestBuilder.sendRequest(null, new RequestCallback() {
-                @Override
-                public void onResponseReceived(Request request, Response response) {
-                    switch (response.getStatusCode()) {
-                        case Response.SC_OK:
-                            try {
-                                handler.onVersionLoaded(response.getText());
-                            } catch (Exception ex) {
-                                handler.onAnalysisServerException(ex.getMessage());
-                            }
-                            break;
-                        default:
-                            try {
-                                AnalysisError analysisError = AnalysisModelFactory.getModelObject(AnalysisError.class, response.getText());
-                                handler.onVersionError(analysisError);
-                            } catch (AnalysisModelException e) {
-                                handler.onAnalysisServerException(e.getMessage());
-                            }
-                    }
-                }
-
-                @Override
-                public void onError(Request request, Throwable exception) {
-                    handler.onAnalysisServerException(exception.getMessage());
-                }
-            });
-
-        } catch (RequestException ex) {
-            handler.onAnalysisServerException(ex.getMessage());
-        }
-        return null;
-    }
-
 
 }
 

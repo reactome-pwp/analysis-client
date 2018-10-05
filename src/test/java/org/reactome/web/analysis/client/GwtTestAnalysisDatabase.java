@@ -2,6 +2,7 @@ package org.reactome.web.analysis.client;
 
 import com.google.gwt.junit.client.GWTTestCase;
 import org.reactome.web.analysis.client.model.AnalysisError;
+import org.reactome.web.analysis.client.model.DBInfo;
 
 
 /**
@@ -35,46 +36,18 @@ public class GwtTestAnalysisDatabase extends GWTTestCase {
         delayTestFinish(10000);
 
         AnalysisClient.SERVER = "http://reactomedev.oicr.on.ca";
-        AnalysisClient.getDatabaseName(new AnalysisHandler.DatabaseName() {
+        AnalysisClient.getDatabaseInformation(new AnalysisHandler.DatabaseInformation() {
             @Override
-            public void onNameLoaded(String dbName) {
-                assertNotNull(dbName);
-                assertNotSame(dbName, "");
+            public void onDBInfoLoaded(DBInfo dbInfo) {
+                assertNotNull(dbInfo.getName());
+                assertNotSame(dbInfo.getName(), "");
+                assertNotNull(dbInfo.getVersion());
+                assertNotNull(dbInfo.getChecksum());
                 finishTest();
             }
 
             @Override
-            public void onNameError(AnalysisError error) {
-                fail(error.getReason());
-            }
-
-            @Override
-            public void onAnalysisServerException(String message) {
-                fail(message);
-            }
-        });
-    }
-
-    /**
-     * Tests the method that returns the database version (e.g. 66) used by the analysis.
-     */
-    public void testAnalysisDatabaseVersion() {
-        // Since RPC calls are asynchronous, we will need to wait for a response
-        // after this test method returns. This line tells the test runner to wait
-        // up to 10 seconds before timing out.
-        delayTestFinish(10000);
-
-        AnalysisClient.SERVER = "http://reactomedev.oicr.on.ca";
-        AnalysisClient.getDatabaseVersion(new AnalysisHandler.DatabaseVersion() {
-            @Override
-            public void onVersionLoaded(String dbVersion) {
-                assertNotNull(dbVersion);
-                assertNotSame(dbVersion, "");
-                finishTest();
-            }
-
-            @Override
-            public void onVersionError(AnalysisError error) {
+            public void onDBInfoError(AnalysisError error) {
                 fail(error.getReason());
             }
 

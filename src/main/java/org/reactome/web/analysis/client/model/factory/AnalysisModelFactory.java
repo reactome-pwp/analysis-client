@@ -24,6 +24,7 @@ public abstract class AnalysisModelFactory {
         AutoBean<AnalysisError> analysisError();
         AutoBean<AnalysisResult> analysisResult();
         AutoBean<AnalysisSummary> analysisSummary();
+        AutoBean<DBInfo> dBInfo();
         AutoBean<ResourceSummary> resourceSummary();
         AutoBean<PathwayBase> pathwayBase();
         AutoBean<InteractorEvidence> interactorEvidence();
