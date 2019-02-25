@@ -19,5 +19,7 @@ public interface AnalysisResult {
 
     ExpressionSummary getExpression();
 
+    List<SpeciesSummary> getSpeciesSummary();
+
     List<String> getWarnings();
 }

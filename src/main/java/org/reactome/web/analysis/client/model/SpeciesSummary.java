@@ -7,6 +7,10 @@ public interface SpeciesSummary {
 
     Long getDbId();
 
+    Long getTaxId();
+
     String getName();
+
+    Integer getPathways();
 
 }

@@ -70,6 +70,15 @@ public interface AnalysisHandler {
 
     }
 
+    interface PathwaysBinned extends AnalysisHandler {
+
+        void onPathwaysBinnedLoaded(List<Bin> pathwaysBinned);
+
+        void onPathwaysBinnedError(AnalysisError error);
+
+    }
+
+
     interface Reactions extends AnalysisHandler {
 
         void onReactionsAnalysisDataRetrieved(Set<Long> reactions);

@@ -41,6 +41,7 @@ public abstract class AnalysisModelFactory {
         AutoBean<IdentifierSummary> identifierSummary();
         AutoBean<ExpressionSummary> expressionBoundaries();
         AutoBean<SpeciesFilteredResult> speciesFilteredResult();
+        AutoBean<Bin> bin();
     }
 
     public static <T> T getModelObject(Class<T> cls, String json) throws AnalysisModelException {

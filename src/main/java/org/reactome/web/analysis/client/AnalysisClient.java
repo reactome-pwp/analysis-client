@@ -9,10 +9,7 @@ import org.reactome.web.analysis.client.model.*;
 import org.reactome.web.analysis.client.model.factory.AnalysisModelFactory;
 import org.reactome.web.pwp.model.client.classes.Pathway;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -24,15 +21,15 @@ public abstract class AnalysisClient {
 
     private static final Set<String> validTokens = new HashSet<>();
 
-    public static Request analyseData(String data, boolean projection, boolean interactors, int pageSize, int page, final AnalysisHandler.Result handler) {
-        String url = SERVER + ANALYSIS + "/identifiers/" + (projection ? "projection" : "") + "?interactors=" + interactors + "&pageSize=" + pageSize + "&page=" + page;
+    public static Request analyseData(String data, boolean projection, boolean interactors, List<?> speciesList, int pageSize, int page, final AnalysisHandler.Result handler) {
+        String url = SERVER + ANALYSIS + "/identifiers/" + (projection ? "projection" : "") + "?interactors=" + interactors + getSpeciesParameter(speciesList, ",") + "&pageSize=" + pageSize + "&page=" + page;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
         requestBuilder.setHeader("Content-Type", "text/plain");
         return analyse(requestBuilder, data, handler);
     }
 
-    public static Request analyseURL(String targetURL, boolean projection, boolean interactors, int pageSize, int page, final AnalysisHandler.Result handler) {
-        String url = SERVER + ANALYSIS + "/identifiers/url/" + (projection ? "projection" : "") + "?interactors=" + interactors + "&pageSize=" + pageSize + "&page=" + page;
+    public static Request analyseURL(String targetURL, boolean projection, boolean interactors, List<?> speciesList, int pageSize, int page, final AnalysisHandler.Result handler) {
+        String url = SERVER + ANALYSIS + "/identifiers/url/" + (projection ? "projection" : "") + "?interactors=" + interactors + getSpeciesParameter(speciesList, ",") + "&pageSize=" + pageSize + "&page=" + page;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
         requestBuilder.setHeader("Content-Type", "text/plain");
         return analyse(requestBuilder, targetURL, handler);
@@ -130,8 +127,21 @@ public abstract class AnalysisClient {
     }
 
     public static Request getResult(String token, String resource, int pageSize, int page, final AnalysisHandler.Result handler) {
-        String url = SERVER + ANALYSIS + "/token/" + token + "?resource=" + resource + "&pageSize=" + pageSize + "&page=" + page;
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
+        return getResult(token, resource, pageSize, page, null, null, null, null, true, null, null, handler);
+    }
+
+    public static Request getResult(String token, String resource, int pageSize, int page, List<?> speciesList, String sortBy, String order, Double pValue, Boolean includeDisease, Integer min, Integer max, final AnalysisHandler.Result handler) {
+        StringBuilder url = new StringBuilder();
+        url.append(SERVER).append(ANALYSIS).append("/token/").append(token).append("?resource=").append(resource).append("&pageSize=").append(pageSize).append("&page=").append(page);
+        url.append(getSpeciesParameter(speciesList, ","));
+        url.append(sortBy == null || sortBy.isEmpty()           ? ""  : "&sortBy=" + sortBy);
+        url.append(order == null || order.isEmpty()             ? ""  : "&order=" + order);
+        url.append(pValue == null || pValue == 1d               ? ""  : "&pValue=" + pValue);
+        url.append(includeDisease == null || includeDisease     ? ""  : "&includeDisease=" + includeDisease);
+        url.append(min == null                                  ? ""  : "&min=" + min);
+        url.append(max == null                                  ? ""  : "&max=" + max);
+
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url.toString());
         try {
             final long start = System.currentTimeMillis();
             return requestBuilder.sendRequest(null, new RequestCallback() {
@@ -465,6 +475,50 @@ public abstract class AnalysisClient {
         return null;
     }
 
+    public static Request getPathwaysBinnedBySize(String token, String resource, Integer binSize, Double pValue, List<?> speciesList, final AnalysisHandler.PathwaysBinned handler) {
+        String url = SERVER + ANALYSIS + "/token/" + token + "/pathways/binned/?binSize=" + binSize + "&pValue=" + pValue + getSpeciesParameter(speciesList, ",") + "&resource=" + resource;
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
+        requestBuilder.setHeader("Accept", "application/json");
+        try {
+            return requestBuilder.sendRequest(null, new RequestCallback() {
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                    switch (response.getStatusCode()) {
+                        case Response.SC_OK:
+                            List<Bin> pathwaysBinned = new LinkedList<>();
+                            try {
+                                JSONArray aux = JSONParser.parseStrict(response.getText()).isArray();
+                                for (int i = 0; i < aux.size(); i++) {
+                                    JSONObject obj = aux.get(i).isObject();
+                                    pathwaysBinned.add(AnalysisModelFactory.getModelObject(Bin.class, obj.toString()));
+                                }
+                            } catch (AnalysisModelException e) {
+                                handler.onAnalysisServerException(e.getMessage());
+                                return;
+                            }
+                            handler.onPathwaysBinnedLoaded(pathwaysBinned);
+                            break;
+                        default:
+                            try {
+                                AnalysisError analysisError = AnalysisModelFactory.getModelObject(AnalysisError.class, response.getText());
+                                handler.onPathwaysBinnedError(analysisError);
+                            } catch (AnalysisModelException e) {
+                                handler.onAnalysisServerException(e.getMessage());
+                            }
+                    }
+                }
+
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    handler.onAnalysisServerException(exception.getMessage());
+                }
+            });
+        } catch (RequestException ex) {
+            handler.onAnalysisServerException(ex.getMessage());
+        }
+        return null;
+    }
+
     public static Request filterResultBySpecies(String token, String resource, Long species, final AnalysisHandler.Pathways handler) {
         String url = SERVER + ANALYSIS + "/token/" + token + "/filter/species/" + species + "?resource=" + resource;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
@@ -624,6 +678,18 @@ public abstract class AnalysisClient {
             handler.onAnalysisServerException(ex.getMessage());
         }
         return null;
+    }
+
+    private static String getSpeciesParameter(Collection<?> list, String separator){
+        if (list == null || list.isEmpty()) return "";
+        if (separator == null) separator = "";
+        StringBuilder sb = new StringBuilder();
+        sb.append("&species=");
+        for (Object s : list) {
+            sb.append(s).append(separator);
+        }
+        sb.delete(sb.length() - separator.length(), sb.length());
+        return sb.toString();
     }
 
 }
