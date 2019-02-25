@@ -40,8 +40,8 @@ public class GwtTestAnalysisProjection extends GWTTestCase {
         // up to 10 seconds before timing out.
         delayTestFinish(10000);
 
-        AnalysisClient.SERVER = "http://reactomedev.oicr.on.ca";
-        AnalysisClient.analyseData("#Test\nPTEN\nUNC5B", true, false, 1, 1, new AnalysisHandler.Result() {
+        AnalysisClient.SERVER = "http://dev.reactome.org";
+        AnalysisClient.analyseData("#Test\nPTEN\nUNC5B", true, false, null, 1, 1, new AnalysisHandler.Result() {
             @Override
             public void onAnalysisServerException(String message) {
                 fail(message);
@@ -71,7 +71,7 @@ public class GwtTestAnalysisProjection extends GWTTestCase {
         // up to 10 seconds before timing out.
         delayTestFinish(10000);
 
-        AnalysisClient.SERVER = "http://reactomedev.oicr.on.ca";
+        AnalysisClient.SERVER = "http://dev.reactome.org";
         List<String> pathways = Arrays.asList("1257604","166520","187037","000000");
         AnalysisClient.getPathwaySummaries(token, "TOTAL", pathways, new AnalysisHandler.Summaries() {
             @Override

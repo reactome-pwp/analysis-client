@@ -35,7 +35,7 @@ public class GwtTestAnalysisDatabase extends GWTTestCase {
         // up to 10 seconds before timing out.
         delayTestFinish(10000);
 
-        AnalysisClient.SERVER = "http://reactomedev.oicr.on.ca";
+        AnalysisClient.SERVER = "http://dev.reactome.org";
         AnalysisClient.getDatabaseInformation(new AnalysisHandler.DatabaseInformation() {
             @Override
             public void onDBInfoLoaded(DBInfo dbInfo) {

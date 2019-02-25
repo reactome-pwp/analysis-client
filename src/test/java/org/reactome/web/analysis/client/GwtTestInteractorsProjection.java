@@ -27,8 +27,8 @@ public class GwtTestInteractorsProjection extends GWTTestCase {
         // up to 10 seconds before timing out.
         delayTestFinish(10000);
 
-        AnalysisClient.SERVER = "http://reactomedev.oicr.on.ca";
-        AnalysisClient.analyseData("#Interactors\nFUND1\nQ9Z254\nQ9GZQ8\nQ8WXH5", true, true, 1, 1, new AnalysisHandler.Result() {
+        AnalysisClient.SERVER = "http://dev.reactome.org";
+        AnalysisClient.analyseData("#Interactors\nFUND1\nQ9Z254\nQ9GZQ8\nQ8WXH5", true, true, null, 1, 1, new AnalysisHandler.Result() {
             @Override
             public void onAnalysisServerException(String message) {
                 fail(message);
@@ -57,7 +57,7 @@ public class GwtTestInteractorsProjection extends GWTTestCase {
         // up to 10 seconds before timing out.
         delayTestFinish(10000);
 
-        AnalysisClient.SERVER = "http://reactomedev.oicr.on.ca";
+        AnalysisClient.SERVER = "http://dev.reactome.org";
         AnalysisClient.getPathwayFoundInteractors(token, "TOTAL", 5205647L, new AnalysisHandler.Interactors() {
             @Override
             public void onPathwayInteractorsLoaded(FoundInteractors interactors, long time) {
