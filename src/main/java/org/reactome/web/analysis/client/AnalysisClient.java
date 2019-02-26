@@ -616,9 +616,20 @@ public abstract class AnalysisClient {
         return null;
     }
 
-    public static void findPathwayPage(Long pathway, String token, String resource, final AnalysisHandler.Page handler) {
-        String url = SERVER + ANALYSIS + "/token/" + token + "/page/" + pathway + "?resource=" + resource;
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
+    public static void findPathwayPage(Long pathway, String token, String resource, int pageSize, List<?> speciesList, String sortBy, String order, Double pValue, Boolean includeDisease, Integer min, Integer max, final AnalysisHandler.Page handler) {
+        StringBuilder url = new StringBuilder();
+        url.append(SERVER).append(ANALYSIS).append("/token/").append(token).append("/page/").append(pathway)
+                .append("?resource=").append(resource)
+                .append("&pageSize=").append(pageSize)
+                .append(getSpeciesParameter(speciesList, ","))
+                .append(sortBy == null || sortBy.isEmpty()           ? ""  : "&sortBy=" + sortBy)
+                .append(order == null || order.isEmpty()             ? ""  : "&order=" + order)
+                .append(pValue == null || pValue == 1d               ? ""  : "&pValue=" + pValue)
+                .append(includeDisease == null || includeDisease     ? ""  : "&includeDisease=" + includeDisease)
+                .append(min == null                                  ? ""  : "&min=" + min)
+                .append(max == null                                  ? ""  : "&max=" + max);
+
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url.toString());
         requestBuilder.setHeader("Accept", "application/json");
         try {
             requestBuilder.sendRequest(null, new RequestCallback() {
