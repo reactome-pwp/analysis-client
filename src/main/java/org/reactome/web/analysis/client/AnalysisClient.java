@@ -422,7 +422,7 @@ public abstract class AnalysisClient {
     }
 
 
-    public static Request getPathwaySummaries(String token, String resource, List<String> pathways, final AnalysisHandler.Summaries handler) {
+    public static Request getPathwaySummaries(String token, String resource, List<?> speciesList, Double pValue, Boolean includeDisease, Integer min, Integer max,  List<String> pathways, final AnalysisHandler.Summaries handler) {
         if (pathways == null || pathways.isEmpty()) return null;
         StringBuilder postData = new StringBuilder();
         for (String pathway : pathways) {
@@ -430,8 +430,16 @@ public abstract class AnalysisClient {
         }
         if (postData.length() > 0) postData.deleteCharAt(postData.length() - 1);
 
-        String url = SERVER + ANALYSIS + "/token/" + token + "/filter/pathways?resource=" + resource;
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
+        StringBuilder url = new StringBuilder()
+                .append(SERVER).append(ANALYSIS)
+                .append("/token/").append(token)
+                .append("/filter/pathways?resource=").append(resource)
+                .append(getSpeciesParameter(speciesList, ","))
+                .append(pValue == null || pValue == 1d               ? ""  : "&pValue=" + pValue)
+                .append(includeDisease == null || includeDisease     ? ""  : "&includeDisease=" + includeDisease)
+                .append(min == null                                  ? ""  : "&min=" + min)
+                .append(max == null                                  ? ""  : "&max=" + max);
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url.toString());
         try {
             final long start = System.currentTimeMillis();
             return requestBuilder.sendRequest(postData.toString(), new RequestCallback() {

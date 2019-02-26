@@ -73,7 +73,7 @@ public class GwtTestAnalysisProjection extends GWTTestCase {
 
         AnalysisClient.SERVER = "http://dev.reactome.org";
         List<String> pathways = Arrays.asList("1257604","166520","187037","000000");
-        AnalysisClient.getPathwaySummaries(token, "TOTAL", pathways, new AnalysisHandler.Summaries() {
+        AnalysisClient.getPathwaySummaries(token, "TOTAL", null, 0.95, true, null, null, pathways, new AnalysisHandler.Summaries() {
             @Override
             public void onPathwaySummariesLoaded(List<PathwaySummary> pathwaySummaries, long time) {
                 assertTrue("Only three of them should be there", pathwaySummaries.size() == 3);
