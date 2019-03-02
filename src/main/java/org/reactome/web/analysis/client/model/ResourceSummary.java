@@ -9,4 +9,6 @@ public interface ResourceSummary {
 
     Integer getPathways();
 
+    Integer getFiltered();
+
 }

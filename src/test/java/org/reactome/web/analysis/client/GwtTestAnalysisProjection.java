@@ -1,6 +1,7 @@
 package org.reactome.web.analysis.client;
 
 import com.google.gwt.junit.client.GWTTestCase;
+import org.reactome.web.analysis.client.filter.ResultFilter;
 import org.reactome.web.analysis.client.model.AnalysisError;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.analysis.client.model.PathwaySummary;
@@ -73,7 +74,9 @@ public class GwtTestAnalysisProjection extends GWTTestCase {
 
         AnalysisClient.SERVER = "http://dev.reactome.org";
         List<String> pathways = Arrays.asList("1257604","166520","187037","000000");
-        AnalysisClient.getPathwaySummaries(token, "TOTAL", null, 0.95, true, null, null, pathways, new AnalysisHandler.Summaries() {
+        ResultFilter filter = new ResultFilter(); // new ResultFilter("TOTAL", 0.95, true, null, null, null);
+        filter.setpValue(0.95);
+        AnalysisClient.getPathwaySummaries(token, filter, pathways, new AnalysisHandler.Summaries() {
             @Override
             public void onPathwaySummariesLoaded(List<PathwaySummary> pathwaySummaries, long time) {
                 assertTrue("Only three of them should be there", pathwaySummaries.size() == 3);

@@ -5,14 +5,18 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import org.reactome.web.analysis.client.exceptions.AnalysisModelException;
+import org.reactome.web.analysis.client.filter.ResultFilter;
 import org.reactome.web.analysis.client.model.*;
 import org.reactome.web.analysis.client.model.factory.AnalysisModelFactory;
 import org.reactome.web.pwp.model.client.classes.Pathway;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
- * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ * @author Antonio Fabregat (fabregat@ebi.ac.uk)
  */
 public abstract class AnalysisClient {
 
@@ -21,15 +25,15 @@ public abstract class AnalysisClient {
 
     private static final Set<String> validTokens = new HashSet<>();
 
-    public static Request analyseData(String data, boolean projection, boolean interactors, List<?> speciesList, int pageSize, int page, final AnalysisHandler.Result handler) {
-        String url = SERVER + ANALYSIS + "/identifiers/" + (projection ? "projection" : "") + "?interactors=" + interactors + getSpeciesParameter(speciesList, ",") + "&pageSize=" + pageSize + "&page=" + page;
+    public static Request analyseData(String data, boolean projection, boolean interactors, ResultFilter filter, int pageSize, int page, final AnalysisHandler.Result handler) {
+        String url = SERVER + ANALYSIS + "/identifiers/" + (projection ? "projection" : "") + "?" + filter +"&interactors=" + interactors + "&pageSize=" + pageSize + "&page=" + page;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
         requestBuilder.setHeader("Content-Type", "text/plain");
         return analyse(requestBuilder, data, handler);
     }
 
-    public static Request analyseURL(String targetURL, boolean projection, boolean interactors, List<?> speciesList, int pageSize, int page, final AnalysisHandler.Result handler) {
-        String url = SERVER + ANALYSIS + "/identifiers/url/" + (projection ? "projection" : "") + "?interactors=" + interactors + getSpeciesParameter(speciesList, ",") + "&pageSize=" + pageSize + "&page=" + page;
+    public static Request analyseURL(String targetURL, boolean projection, boolean interactors, ResultFilter filter, int pageSize, int page, final AnalysisHandler.Result handler) {
+        String url = SERVER + ANALYSIS + "/identifiers/url/" + (projection ? "projection" : "") + "?" + filter + "&interactors=" + interactors + "&pageSize=" + pageSize + "&page=" + page;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
         requestBuilder.setHeader("Content-Type", "text/plain");
         return analyse(requestBuilder, targetURL, handler);
@@ -126,22 +130,12 @@ public abstract class AnalysisClient {
         return null;
     }
 
-    public static Request getResult(String token, String resource, int pageSize, int page, final AnalysisHandler.Result handler) {
-        return getResult(token, resource, pageSize, page, null, null, null, null, true, null, null, handler);
-    }
-
-    public static Request getResult(String token, String resource, int pageSize, int page, List<?> speciesList, String sortBy, String order, Double pValue, Boolean includeDisease, Integer min, Integer max, final AnalysisHandler.Result handler) {
-        StringBuilder url = new StringBuilder();
-        url.append(SERVER).append(ANALYSIS).append("/token/").append(token).append("?resource=").append(resource).append("&pageSize=").append(pageSize).append("&page=").append(page);
-        url.append(getSpeciesParameter(speciesList, ","));
-        url.append(sortBy == null || sortBy.isEmpty()           ? ""  : "&sortBy=" + sortBy);
-        url.append(order == null || order.isEmpty()             ? ""  : "&order=" + order);
-        url.append(pValue == null || pValue == 1d               ? ""  : "&pValue=" + pValue);
-        url.append(includeDisease == null || includeDisease     ? ""  : "&includeDisease=" + includeDisease);
-        url.append(min == null                                  ? ""  : "&min=" + min);
-        url.append(max == null                                  ? ""  : "&max=" + max);
-
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url.toString());
+    public static Request getResult(String token, ResultFilter filter, int pageSize, int page, String sortBy, String order, final AnalysisHandler.Result handler) {
+        String url = SERVER + ANALYSIS + "/token/" + token + "?" + filter +
+                "&pageSize=" + pageSize + "&page=" + page +
+                (sortBy == null || sortBy.isEmpty() ? "" : "&sortBy=" + sortBy) +
+                (order == null || order.isEmpty() ? "" : "&order=" + order);
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             final long start = System.currentTimeMillis();
             return requestBuilder.sendRequest(null, new RequestCallback() {
@@ -422,7 +416,7 @@ public abstract class AnalysisClient {
     }
 
 
-    public static Request getPathwaySummaries(String token, String resource, List<?> speciesList, Double pValue, Boolean includeDisease, Integer min, Integer max,  List<String> pathways, final AnalysisHandler.Summaries handler) {
+    public static Request getPathwaySummaries(String token, ResultFilter filter, List<String> pathways, final AnalysisHandler.Summaries handler) {
         if (pathways == null || pathways.isEmpty()) return null;
         StringBuilder postData = new StringBuilder();
         for (String pathway : pathways) {
@@ -430,16 +424,8 @@ public abstract class AnalysisClient {
         }
         if (postData.length() > 0) postData.deleteCharAt(postData.length() - 1);
 
-        StringBuilder url = new StringBuilder()
-                .append(SERVER).append(ANALYSIS)
-                .append("/token/").append(token)
-                .append("/filter/pathways?resource=").append(resource)
-                .append(getSpeciesParameter(speciesList, ","))
-                .append(pValue == null || pValue == 1d               ? ""  : "&pValue=" + pValue)
-                .append(includeDisease == null || includeDisease     ? ""  : "&includeDisease=" + includeDisease)
-                .append(min == null                                  ? ""  : "&min=" + min)
-                .append(max == null                                  ? ""  : "&max=" + max);
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url.toString());
+        String url = SERVER + ANALYSIS +  "/token/" + token + "/filter/pathways?" + filter;
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
         try {
             final long start = System.currentTimeMillis();
             return requestBuilder.sendRequest(postData.toString(), new RequestCallback() {
@@ -483,8 +469,9 @@ public abstract class AnalysisClient {
         return null;
     }
 
-    public static Request getPathwaysBinnedBySize(String token, String resource, Integer binSize, Double pValue, List<?> speciesList, final AnalysisHandler.PathwaysBinned handler) {
-        String url = SERVER + ANALYSIS + "/token/" + token + "/pathways/binned/?binSize=" + binSize + "&pValue=" + pValue + getSpeciesParameter(speciesList, ",") + "&resource=" + resource;
+    public static Request getPathwaysBinnedBySize(String token, Integer binSize, String resource, Double pValue, List<?> speciesList, final AnalysisHandler.PathwaysBinned handler) {
+        String url = SERVER + ANALYSIS + "/token/" + token + "/pathways/binned/?" + "binSize=" + binSize +
+                "&resource=" + resource + "&pValue=" + pValue + ResultFilter.getSpeciesParameter(speciesList, "&", ",");
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         requestBuilder.setHeader("Accept", "application/json");
         try {
@@ -616,20 +603,13 @@ public abstract class AnalysisClient {
         return null;
     }
 
-    public static void findPathwayPage(Long pathway, String token, String resource, int pageSize, List<?> speciesList, String sortBy, String order, Double pValue, Boolean includeDisease, Integer min, Integer max, final AnalysisHandler.Page handler) {
-        StringBuilder url = new StringBuilder();
-        url.append(SERVER).append(ANALYSIS).append("/token/").append(token).append("/page/").append(pathway)
-                .append("?resource=").append(resource)
-                .append("&pageSize=").append(pageSize)
-                .append(getSpeciesParameter(speciesList, ","))
-                .append(sortBy == null || sortBy.isEmpty()           ? ""  : "&sortBy=" + sortBy)
-                .append(order == null || order.isEmpty()             ? ""  : "&order=" + order)
-                .append(pValue == null || pValue == 1d               ? ""  : "&pValue=" + pValue)
-                .append(includeDisease == null || includeDisease     ? ""  : "&includeDisease=" + includeDisease)
-                .append(min == null                                  ? ""  : "&min=" + min)
-                .append(max == null                                  ? ""  : "&max=" + max);
-
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url.toString());
+    public static void findPathwayPage(Long pathway, String token, ResultFilter filter, int pageSize, String sortBy, String order, final AnalysisHandler.Page handler) {
+        String url = SERVER + ANALYSIS + "/token/" + token + "/page/" + pathway + "?" +
+                filter +
+                "&pageSize=" + pageSize +
+                (sortBy == null || sortBy.isEmpty() ? "" : "&sortBy=" + sortBy) +
+                (order == null || order.isEmpty() ? "" : "&order=" + order);
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         requestBuilder.setHeader("Accept", "application/json");
         try {
             requestBuilder.sendRequest(null, new RequestCallback() {
@@ -698,19 +678,6 @@ public abstract class AnalysisClient {
         }
         return null;
     }
-
-    private static String getSpeciesParameter(Collection<?> list, String separator){
-        if (list == null || list.isEmpty()) return "";
-        if (separator == null) separator = "";
-        StringBuilder sb = new StringBuilder();
-        sb.append("&species=");
-        for (Object s : list) {
-            sb.append(s).append(separator);
-        }
-        sb.delete(sb.length() - separator.length(), sb.length());
-        return sb.toString();
-    }
-
 }
 
 
