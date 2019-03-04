@@ -554,7 +554,7 @@ public abstract class AnalysisClient {
         return null;
     }
 
-    public static Request getHitReactions(String token, String resource, Set<Pathway> pathways, final AnalysisHandler.Reactions handler) {
+    public static Request getHitReactions(String token, ResultFilter filter, Set<Pathway> pathways, final AnalysisHandler.Reactions handler) {
         if (pathways == null || pathways.isEmpty()) return null;
         StringBuilder postData = new StringBuilder();
         for (Pathway pathway : pathways) {
@@ -562,7 +562,7 @@ public abstract class AnalysisClient {
         }
         if (postData.length() > 0) postData.delete(postData.length() - 1, postData.length());
 
-        String url = SERVER + ANALYSIS + "/token/" + token + "/reactions/pathways?resource=" + resource;
+        String url = SERVER + ANALYSIS + "/token/" + token + "/reactions/pathways?" + filter;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
         try {
             return requestBuilder.sendRequest(postData.toString(), new RequestCallback() {
