@@ -67,7 +67,7 @@ public class ResultFilter {
     }
 
     public boolean setBoundaries(int min, int max) {
-        if (min < max) return false;
+        if (min > max) return false;
         this.min = min;
         this.max = max;
         return true;
