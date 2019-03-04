@@ -14,5 +14,4 @@ public interface SpeciesSummary {
     Integer getPathways();
 
     Integer getFiltered();
-
 }
