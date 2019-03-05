@@ -469,9 +469,8 @@ public abstract class AnalysisClient {
         return null;
     }
 
-    public static Request getPathwaysBinnedBySize(String token, Integer binSize, String resource, Double pValue, List<?> speciesList, final AnalysisHandler.PathwaysBinned handler) {
-        String url = SERVER + ANALYSIS + "/token/" + token + "/pathways/binned/?" + "binSize=" + binSize +
-                "&resource=" + resource + "&pValue=" + pValue + ResultFilter.getSpeciesParameter(speciesList, "&", ",");
+    public static Request getPathwaysBinnedBySize(String token, Integer binSize, ResultFilter filter, final AnalysisHandler.PathwaysBinned handler) {
+        String url = SERVER + ANALYSIS + "/token/" + token + "/pathways/binned/?" + "binSize=" + binSize + "&" + filter;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         requestBuilder.setHeader("Accept", "application/json");
         try {
