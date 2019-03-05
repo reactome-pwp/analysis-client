@@ -15,12 +15,12 @@ import java.util.Objects;
  */
 public class ResultFilter {
 
-    private String resource;
-    private Double pValue;
-    private boolean includeDisease = true;
-    private Integer min;
-    private Integer max;
-    private List<String> speciesList;
+    protected String resource;
+    protected Double pValue;
+    protected boolean includeDisease = true;
+    protected Integer min;
+    protected Integer max;
+    protected List<String> speciesList;
 
     public ResultFilter() {
     }
