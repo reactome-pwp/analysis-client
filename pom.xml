@@ -8,7 +8,7 @@
     <groupId>org.reactome.web.pwp</groupId>
     <artifactId>analysis-client</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.0</version>
     <name>GWT Analysis Client</name>
 
     <description>
