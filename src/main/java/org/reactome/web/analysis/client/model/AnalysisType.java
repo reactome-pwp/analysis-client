@@ -8,7 +8,10 @@ public enum AnalysisType {
     NONE,
     SPECIES_COMPARISON,
     OVERREPRESENTATION,
-    EXPRESSION;
+    EXPRESSION,
+    GSA_REGULATION, //DISCRETE values in the "expression" for pathways (proteins will contain normal expression values)
+    GSA_STATISTICS,
+    GSVA;
 
     public static AnalysisType getType(String type){
         if(type==null) return  null;
