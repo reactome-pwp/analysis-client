@@ -17,6 +17,7 @@ import java.util.Set;
 
 /**
  * @author Antonio Fabregat (fabregat@ebi.ac.uk)
+ * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public abstract class AnalysisClient {
 
@@ -101,8 +102,16 @@ public abstract class AnalysisClient {
                     public void onResponseReceived(Request request, Response response) {
                         switch (response.getStatusCode()) {
                             case Response.SC_OK:
+                                AnalysisSummary summary;
+                                try {
+                                    AnalysisResult result = AnalysisModelFactory.getModelObject(AnalysisResult.class, response.getText());
+                                    summary = result.getSummary();
+                                } catch (AnalysisModelException e) {
+                                    handler.onAnalysisServerException(e.getMessage());
+                                    return;
+                                }
                                 validTokens.add(token);
-                                handler.onTokenAvailabilityChecked(true, null);
+                                handler.onTokenAvailabilityCheckedWithSummary(summary, true, null);
                                 break;
                             case Response.SC_GONE:
                                 handler.onTokenAvailabilityChecked(false, "Your result may have been deleted due to a new content release.\n" +

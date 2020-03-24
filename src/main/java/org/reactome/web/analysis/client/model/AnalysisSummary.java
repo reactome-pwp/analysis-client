@@ -26,4 +26,6 @@ public interface AnalysisSummary {
     //can use it later one for the summary
     void setSpeciesName(String name);
     String getSpeciesName();
+
+    boolean isIncludeDisease();
 }

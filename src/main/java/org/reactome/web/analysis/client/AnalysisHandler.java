@@ -48,7 +48,7 @@ public interface AnalysisHandler {
     interface NotFoundIdentifiers extends AnalysisHandler {
 
         void onNotFoundIdentifiersLoaded(List<IdentifierSummary> notFoundIdentifiers);
-        
+
         void onNotFoundIdentifiersError(AnalysisError error);
     }
 
@@ -120,9 +120,8 @@ public interface AnalysisHandler {
 
 
     interface Token extends AnalysisHandler {
-
         void onTokenAvailabilityChecked(boolean available, String message);
-
+        void onTokenAvailabilityCheckedWithSummary(AnalysisSummary summary, boolean available, String message);
     }
 
     interface DatabaseInformation extends AnalysisHandler {
