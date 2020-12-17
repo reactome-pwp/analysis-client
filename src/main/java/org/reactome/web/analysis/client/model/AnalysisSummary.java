@@ -28,4 +28,6 @@ public interface AnalysisSummary {
     String getSpeciesName();
 
     boolean isIncludeDisease();
+
+    String getGsaToken();
 }
