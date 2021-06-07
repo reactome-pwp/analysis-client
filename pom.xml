@@ -49,7 +49,6 @@
 
         <appModule>org.reactome.web.analysis.Analysis</appModule>
         <appName>${appModule}</appName>
-        <gwt.test.utils.version>0.63</gwt.test.utils.version>
     </properties>
 
     <dependencyManagement>
