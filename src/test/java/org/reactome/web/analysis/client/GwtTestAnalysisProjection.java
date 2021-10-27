@@ -73,7 +73,7 @@ public class GwtTestAnalysisProjection extends GWTTestCase {
         delayTestFinish(10000);
 
         AnalysisClient.SERVER = "http://dev.reactome.org";
-        List<String> pathways = Arrays.asList("1257604","166520","187037","000000");
+        List<String> pathways = Arrays.asList("1257604", "3700989", "5674404", "000000");
         ResultFilter filter = new ResultFilter(); // new ResultFilter("TOTAL", 0.95, true, null, null, null);
         filter.setpValue(0.95);
         AnalysisClient.getPathwaySummaries(token, filter, pathways, new AnalysisHandler.Summaries() {

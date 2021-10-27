@@ -24,6 +24,7 @@ import java.util.List;
 public class GwtTestAnalysisNoProjection extends GWTTestCase {
 
     private static String token;
+
     /**
      * Must refer to a valid module that sources this class.
      */
@@ -73,13 +74,13 @@ public class GwtTestAnalysisNoProjection extends GWTTestCase {
         delayTestFinish(10000);
 
         AnalysisClient.SERVER = "http://dev.reactome.org";
-        List<String> pathways = Arrays.asList("1257604","166520","187037","000000");
+        List<String> pathways = Arrays.asList("1257604", "3700989", "5674404", "000000");
         ResultFilter filter = new ResultFilter(); // new ResultFilter("TOTAL", 0.95, true, null, null, null);
         filter.setpValue(0.95);
-        AnalysisClient.getPathwaySummaries(token,  filter, pathways, new AnalysisHandler.Summaries() {
+        AnalysisClient.getPathwaySummaries(token, filter, pathways, new AnalysisHandler.Summaries() {
             @Override
             public void onPathwaySummariesLoaded(List<PathwaySummary> pathwaySummaries, long time) {
-                assertTrue("Only three of them should be there", pathwaySummaries.size() == 3);
+                assertEquals("Only three of them should be there", 3, pathwaySummaries.size());
                 finishTest();
             }
 
