@@ -8,8 +8,8 @@
     <groupId>org.reactome.web.pwp</groupId>
     <artifactId>analysis-client</artifactId>
     <packaging>jar</packaging>
-    <version>2.0.0-SNAPSHOT</version>
-    <name>GWT Analysis Client</name>
+    <version>2.0.0</version>
+    <name>Analysis Client</name>
 
     <description>
         Analysis Client for Reactome Analysis Service
@@ -46,7 +46,7 @@
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <reactome.web.model>2.2.0-SNAPSHOT</reactome.web.model>
+        <reactome.web.model>2.2.0</reactome.web.model>
 
         <appModule>org.reactome.web.analysis.Analysis</appModule>
         <appName>${appModule}</appName>
